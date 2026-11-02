@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - EduMetrics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #31104b 100%);
+            overflow: hidden;
+            position: relative;
+        }
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.05;
+            background: #fff;
+            animation: float-circle 6s ease-in-out infinite;
+        }
+        .bg-circle:nth-child(1) { width: 340px; height: 340px; top: -100px; left: -100px; }
+        .bg-circle:nth-child(2) { width: 220px; height: 220px; bottom: -50px; right: -50px; animation-delay: 2s; }
+        .bg-circle:nth-child(3) { width: 160px; height: 160px; top: 60%; left: 75%; animation-delay: 4s; }
+        @keyframes float-circle {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+            z-index: 10;
+            padding: 1rem;
+        }
+        .admin-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.8rem 2.4rem;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+            animation: cardEntrance 0.7s ease-out;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .admin-shield {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #dc2626, #7c2d12);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.3rem;
+            box-shadow: 0 10px 25px rgba(220,38,38,0.35);
+        }
+        .admin-shield i { color: #fff; font-size: 2rem; }
+        h2 { text-align: center; font-weight: 800; color: #0f172a; margin-bottom: 0.2rem; letter-spacing: 0.5px; }
+        .subtitle { text-align: center; color: #64748b; font-size: 0.85rem; margin-bottom: 1.8rem; }
+
+        .form-floating { margin-bottom: 0.9rem; }
+        .form-floating .form-control {
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            padding: 1rem 1rem 0.5rem 2.8rem;
+            font-size: 0.93rem; height: 56px;
+            transition: all 0.25s;
+        }
+        .form-floating .form-control:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 4px rgba(220,38,38,0.12);
+        }
+        .input-icon {
+            position: absolute; left: 1rem; top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8; z-index: 5;
+        }
+        .form-control:focus ~ .input-icon { color: #dc2626; }
+
+        .btn-admin {
+            width: 100%; padding: 0.82rem;
+            border: none; border-radius: 12px;
+            font-weight: 700; font-size: 0.96rem;
+            color: #fff;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            transition: all 0.25s ease;
+            margin-top: 0.5rem;
+        }
+        .btn-admin:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 22px rgba(220,38,38,0.4);
+            color: #fff;
+        }
+
+        .back-link {
+            text-align: center; margin-top: 1.5rem;
+            font-size: 0.86rem; color: #64748b;
+        }
+        .back-link a { color: #4f46e5; font-weight: 600; text-decoration: none; }
+        .back-link a:hover { text-decoration: underline; }
+
+        .flash-container .alert { border-radius: 12px; border: none; font-size: 0.86rem; }
+    </style>
+</head>
+<body>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+
+    <div class="login-wrapper">
+        <div class="admin-card">
+            <div class="admin-shield">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h2>ADMIN LOGIN</h2>
+            <p class="subtitle">EduMetrics Central Administration Portal</p>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-container mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show py-2 px-3" role="alert">
+                    <small><i class="fas fa-exclamation-circle me-1"></i>{{ message }}</small>
+                    <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="post" action="{{ url_for('admin.login') }}">
+                <div class="form-floating position-relative">
+                    <input type="text" class="form-control" id="name" name="name"
+                           placeholder="Administrator Name" required autocomplete="off">
+                    <label for="name" style="padding-left: 2.8rem;">Administrator Name</label>
+                    <i class="fas fa-user-shield input-icon"></i>
+                </div>
+
+                <div class="form-floating position-relative">
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Password" required>
+                    <label for="password" style="padding-left: 2.8rem;">Password</label>
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+
+                <button type="submit" class="btn btn-admin">
+                    <i class="fas fa-key me-2"></i>Authenticate as Administrator
+                </button>
+            </form>
+
+            <div class="back-link">
+                <a href="{{ url_for('auth.login') }}">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Student Portal
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile - EduMetrics{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-fadeInUp">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ url_for('auth.dashboard') }}" class="btn btn-sm btn-outline-secondary me-3">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h4 class="fw-bold mb-0" style="color:#1e1b4b;"><i class="fas fa-user-edit me-2 text-primary"></i>Edit Profile</h4>
+                <p class="text-muted small mb-0">Update your personal and academic information</p>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form method="post">
+                <!-- Read-only Roll Number -->
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-hashtag me-1 text-muted"></i>Roll Number <span class="badge bg-secondary">Read Only</span></label>
+                    <input type="text" class="form-control bg-light" value="{{ student.roll_number }}" readonly>
+                </div>
+
+                <hr class="my-3">
+                <p class="text-muted small fw-semibold text-uppercase mb-3"><i class="fas fa-user me-1"></i> Personal Information</p>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="full_name" required
+                               value="{{ student.full_name or '' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Age</label>
+                        <input type="number" class="form-control" name="age" min="15" max="40"
+                               value="{{ student.age or '' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" name="dob"
+                               value="{{ student.dob.strftime('%Y-%m-%d') if student.dob else '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Gender</label>
+                        <select class="form-select" name="gender">
+                            <option value="">-- Select --</option>
+                            {% for g in ['Male','Female','Other'] %}
+                            <option value="{{ g }}" {% if student.gender == g %}selected{% endif %}>{{ g }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Mobile Number</label>
+                        <input type="tel" class="form-control" name="mobile_number"
+                               value="{{ student.mobile_number or '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email"
+                               value="{{ student.email or '' }}">
+                    </div>
+                </div>
+
+                <hr class="my-3">
+                <p class="text-muted small fw-semibold text-uppercase mb-3"><i class="fas fa-book me-1"></i> Academic Information</p>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Class</label>
+                        <input type="text" class="form-control" name="class_name"
+                               value="{{ student.class_name or '' }}" placeholder="e.g. 3rd Year">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Semester</label>
+                        <select class="form-select" name="semester">
+                            <option value="">-- Select --</option>
+                            {% for i in range(1, 9) %}
+                            <option value="{{ i }}" {% if student.semester == i|string %}selected{% endif %}>Semester {{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Graduation Year</label>
+                        <input type="number" class="form-control" name="graduation_year"
+                               value="{{ student.graduation_year or '' }}" min="2020" max="2035">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Course</label>
+                        <input type="text" class="form-control" name="course"
+                               value="{{ student.course or '' }}" placeholder="e.g. B.Tech">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Branch</label>
+                        <input type="text" class="form-control" name="branch"
+                               value="{{ student.branch or '' }}" placeholder="e.g. Computer Science">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" name="department"
+                               value="{{ student.department or '' }}" placeholder="e.g. CSE">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">CGPA (0–10)</label>
+                        <input type="number" class="form-control" name="entered_cgpa"
+                               step="0.01" min="0" max="10"
+                               value="{{ student.entered_cgpa or '' }}" placeholder="e.g. 8.5">
+                        <div class="form-text">Enter your cumulative GPA on a 10-point scale.</div>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary-gradient px-4">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                    <a href="{{ url_for('auth.dashboard') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Rankings - EduMetrics{% endblock %}
+
+{% block content %}
+<div class="animate-fadeInUp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-0" style="color:#1e1b4b;">
+                <i class="fas fa-trophy me-2 text-warning"></i>Student Rankings
+            </h4>
+            <p class="text-muted small mb-0">Ranked by CGPA — ties share the same rank</p>
+        </div>
+        {% if my_rank %}
+        <div class="stat-card d-inline-block" style="padding:0.75rem 1.25rem;">
+            <span class="small text-muted">Your Rank</span>
+            <div class="fw-bold fs-4 text-primary">#{{ my_rank }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if ranked %}
+    <div class="table-container animate-scaleIn delay-1">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th style="width:80px;">Rank</th>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Department</th>
+                    <th>Course</th>
+                    <th>Semester</th>
+                    <th>CGPA</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in ranked %}
+                {% set s = item.student %}
+                {% set r = item.rank %}
+                <tr class="{% if s.id == current_user.id %}table-primary fw-semibold{% endif %}">
+                    <td>
+                        {% if r == 1 %}<span class="fs-5">🥇</span>
+                        {% elif r == 2 %}<span class="fs-5">🥈</span>
+                        {% elif r == 3 %}<span class="fs-5">🥉</span>
+                        {% else %}
+                        <span class="badge bg-light text-dark fw-bold" style="font-size:0.85rem;">{{ r }}</span>
+                        {% endif %}
+                        {% if s.id == current_user.id %}<span class="badge bg-primary ms-1">You</span>{% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width:32px;height:32px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                <span class="text-white fw-bold" style="font-size:0.7rem;">{{ s.full_name[0].upper() }}</span>
+                            </div>
+                            {{ s.full_name }}
+                        </div>
+                    </td>
+                    <td><code>{{ s.roll_number }}</code></td>
+                    <td>{{ s.department or '—' }}</td>
+                    <td>{{ s.course or '—' }}</td>
+                    <td>{{ s.semester or '—' }}</td>
+                    <td>
+                        <span class="badge {% if s.entered_cgpa >= 9 %}bg-success{% elif s.entered_cgpa >= 7 %}bg-primary{% elif s.entered_cgpa >= 5 %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 px-2">
+                            {{ s.entered_cgpa }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if s.entered_cgpa >= 9 %}A+
+                        {% elif s.entered_cgpa >= 8 %}A
+                        {% elif s.entered_cgpa >= 7 %}B+
+                        {% elif s.entered_cgpa >= 6 %}B
+                        {% elif s.entered_cgpa >= 5 %}C
+                        {% else %}D{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-trophy fa-4x text-muted opacity-25 mb-3"></i>
+        <h5 class="text-muted">No rankings yet</h5>
+        <p class="text-muted small">Students need to enter their CGPA to appear in rankings.</p>
+        <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-primary-gradient">Enter My CGPA</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

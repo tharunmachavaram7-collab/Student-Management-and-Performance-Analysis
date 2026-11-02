@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard - EduMetrics{% endblock %}
+
+{% block content %}
+<div class="animate-fadeInUp">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-0 text-primary">
+                <i class="fas fa-user-graduate me-2"></i>STUDENT DASHBOARD
+            </h3>
+            <p class="text-muted small mb-0">
+                Student: <strong class="text-dark">{{ stats.student.full_name }}</strong> &bull;
+                Roll Number: <code class="fw-bold text-dark">{{ stats.student.roll_number }}</code> &bull;
+                Account Type: <span class="badge bg-info text-dark">STUDENT</span>
+            </p>
+        </div>
+        <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-primary-gradient">
+            <i class="fas fa-user-edit me-2"></i>Edit Profile / CGPA
+        </a>
+    </div>
+
+    <!-- Profile Card (Anchor: #profile) -->
+    <div class="row mb-4" id="profile">
+        <div class="col-12">
+            <div class="stat-card animate-slideInLeft delay-1" style="background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%); color: #fff;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div style="width:70px;height:70px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-user-graduate fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h4 class="mb-0 fw-bold">{{ stats.student.full_name }}</h4>
+                        <p class="mb-0 opacity-75 small">
+                            Roll Number: <strong>{{ stats.student.roll_number }}</strong>
+                            {% if stats.student.class_name %} &bull; Class: {{ stats.student.class_name }}{% endif %}
+                            {% if stats.student.course %} &bull; Course: {{ stats.student.course }}{% endif %}
+                            {% if stats.student.branch %} — Branch: {{ stats.student.branch }}{% endif %}
+                        </p>
+                        <p class="mb-0 opacity-75 small">
+                            {% if stats.student.department %}Department: {{ stats.student.department }}{% endif %}
+                            {% if stats.student.semester %} &bull; Semester: {{ stats.student.semester }}{% endif %}
+                            {% if stats.student.graduation_year %} &bull; Class of {{ stats.student.graduation_year }}{% endif %}
+                        </p>
+                    </div>
+                    <div class="col-auto text-end">
+                        {% if stats.grade != 'N/A' %}
+                        <div style="font-size:2.2rem;font-weight:800;color:#fbbf24;">{{ stats.grade }}</div>
+                        <div class="small opacity-75">Academic Grade</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row (Anchors: #cgpa, #rank, #performance) -->
+    <div class="row g-3 mb-4" id="performance">
+        <!-- CGPA Card (#cgpa) -->
+        <div class="col-sm-6 col-xl-3" id="cgpa">
+            <div class="stat-card animate-fadeInUp delay-1 h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box bg-gradient-primary">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-primary">
+                            {% if stats.student.entered_cgpa is not none %}{{ stats.student.entered_cgpa }}{% else %}N/A{% endif %}
+                        </div>
+                        <div class="stat-label">Current CGPA</div>
+                    </div>
+                </div>
+                {% if stats.student.entered_cgpa is not none %}
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="text-muted">10-Point Scale</span>
+                        <span class="fw-semibold">{{ stats.student.entered_cgpa }} / 10.0</span>
+                    </div>
+                    <div class="progress" style="height:8px;border-radius:99px;">
+                        <div class="progress-bar bg-gradient-primary"
+                             style="width:{{ (stats.student.entered_cgpa / 10 * 100)|round(1) }}%;border-radius:99px;"
+                             role="progressbar"></div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Rank Card (#rank) -->
+        <div class="col-sm-6 col-xl-3" id="rank">
+            <div class="stat-card animate-fadeInUp delay-2 h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box bg-gradient-warning">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-warning">
+                            {% if stats.rank %}#{{ stats.rank }}{% else %}—{% endif %}
+                        </div>
+                        <div class="stat-label">Class Rank (of {{ stats.total_ranked }})</div>
+                    </div>
+                </div>
+                {% if stats.rank and stats.topper_cgpa %}
+                <div class="mt-3 small text-muted">
+                    Topper: <span class="fw-semibold text-dark">{{ stats.topper_cgpa }}</span>
+                    {% if stats.gap_from_topper is not none %}
+                    &bull; Gap: <span class="fw-semibold text-danger">{{ stats.gap_from_topper }}</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Percentage Card -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card animate-fadeInUp delay-3 h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box bg-gradient-success">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-success">
+                            {% if stats.overall_percentage is not none %}{{ stats.overall_percentage }}%{% else %}N/A{% endif %}
+                        </div>
+                        <div class="stat-label">Calculated %</div>
+                    </div>
+                </div>
+                <div class="mt-3 small text-muted">
+                    Derived from CGPA &times; 10 scale
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall Attendance Card (#attendance) -->
+        <div class="col-sm-6 col-xl-3" id="attendance">
+            <div class="stat-card animate-fadeInUp delay-4 h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box {% if stats.att_pct >= 75 %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value {% if stats.att_pct >= 75 %}text-success{% else %}text-danger{% endif %}">
+                            {{ stats.att_pct }}%
+                        </div>
+                        <div class="stat-label">Attendance Rate</div>
+                    </div>
+                </div>
+                {% if stats.att_pct > 0 %}
+                <div class="mt-3">
+                    <div class="progress" style="height:8px;border-radius:99px;">
+                        <div class="progress-bar {% if stats.att_pct >= 75 %}bg-success{% else %}bg-danger{% endif %}"
+                             style="width:{{ stats.att_pct }}%;border-radius:99px;"></div>
+                    </div>
+                    <div class="small text-muted mt-1">
+                        {% if stats.att_pct >= 75 %}<span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Good standing</span>
+                        {% else %}<span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle me-1"></i>Shortage Risk (&lt;75%)</span>{% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="mt-3 small text-muted">No attendance logs yet</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Marks & Attendance Details (Anchors: #marks, #attendance) -->
+    <div class="row g-4 mb-4">
+        <!-- My Marks Section (#marks) -->
+        <div class="col-lg-7" id="marks">
+            <div class="table-container animate-fadeInUp delay-3">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold" style="color:#1e1b4b;">
+                        <i class="fas fa-edit me-2 text-primary"></i>My Marks & Assessment History
+                    </h6>
+                    <span class="badge bg-primary rounded-pill">{{ stats.marks|length }} recorded</span>
+                </div>
+                {% if stats.marks %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Assessment</th>
+                                <th>Marks Obtained</th>
+                                <th>Max Marks</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in stats.marks %}
+                            <tr>
+                                <td class="fw-semibold">{{ m.subject.name if m.subject else '—' }}</td>
+                                <td><span class="badge bg-light text-dark">{{ m.assessment.name if m.assessment else '—' }}</span></td>
+                                <td class="fw-bold text-primary">{{ m.marks_obtained }}</td>
+                                <td class="text-muted">{{ m.assessment.max_marks if m.assessment else '—' }}</td>
+                                <td>
+                                    {% if m.assessment and m.assessment.max_marks %}
+                                    {% set pct = (m.marks_obtained / m.assessment.max_marks * 100)|round(1) %}
+                                    <span class="fw-semibold {% if pct >= 75 %}text-success{% elif pct >= 50 %}text-warning{% else %}text-danger{% endif %}">
+                                        {{ pct }}%
+                                    </span>
+                                    {% else %}—{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">
+                    <i class="fas fa-clipboard fa-2x mb-2 opacity-25"></i><br>
+                    No marks recorded by faculty yet.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Attendance Breakdown by Subject -->
+        <div class="col-lg-5">
+            <div class="stat-card animate-fadeInUp delay-4">
+                <h6 class="fw-bold mb-3" style="color:#1e1b4b;">
+                    <i class="fas fa-chart-pie me-2 text-accent"></i>Subject-Wise Attendance Analyzer
+                </h6>
+                {% if stats.subj_att %}
+                {% for sa in stats.subj_att %}
+                <div class="mb-3 pb-2 border-bottom">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-semibold">{{ sa.subject.name }} ({{ sa.subject.code }})</span>
+                        <span class="{% if sa.pct >= 75 %}text-success{% else %}text-danger{% endif %} fw-bold">{{ sa.pct }}%</span>
+                    </div>
+                    <div class="progress" style="height:7px;border-radius:99px;">
+                        <div class="progress-bar {% if sa.pct >= 75 %}bg-success{% else %}bg-danger{% endif %}"
+                             style="width:{{ sa.pct }}%;border-radius:99px;"></div>
+                    </div>
+                    <div class="small text-muted mt-1 d-flex justify-content-between">
+                        <span>Attended {{ sa.present }} of {{ sa.total }} classes</span>
+                        {% if sa.pct < 75 %}
+                        <span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle"></i> Attendance Alert</span>
+                        {% else %}
+                        <span class="text-success"><i class="fas fa-check"></i> Safe</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-calendar fa-2x mb-2 opacity-25"></i><br>
+                    No individual subject attendance logged yet.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Enrolled Subjects (Anchor: #subjects) -->
+    <div class="row g-4 mb-4" id="subjects">
+        <div class="col-12">
+            <div class="stat-card animate-fadeInUp delay-4">
+                <h6 class="fw-bold mb-3" style="color:#1e1b4b;">
+                    <i class="fas fa-book me-2 text-primary"></i>Enrolled Academic Subjects
+                </h6>
+                {% if stats.subjects %}
+                <div class="row g-3">
+                    {% for subj in stats.subjects %}
+                    <div class="col-md-4 col-sm-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <code class="fw-bold">{{ subj.code }}</code>
+                                <span class="badge bg-secondary">{{ subj.credits }} Credits</span>
+                            </div>
+                            <h6 class="fw-bold mb-1">{{ subj.name }}</h6>
+                            <small class="text-muted">Semester: {{ subj.semester or 'N/A' }} &bull; {{ subj.department or 'General' }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted small mb-0">No subjects currently configured in the curriculum.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Academic Guidance & Recommendations (Anchor: #guidance) -->
+    <div class="row g-4" id="guidance">
+        <div class="col-12">
+            <div class="stat-card animate-fadeInUp delay-5" style="border-left: 5px solid #4f46e5;">
+                <h5 class="fw-bold mb-3" style="color:#1e1b4b;">
+                    <i class="fas fa-lightbulb me-2 text-warning"></i>Automated Academic Guidance & Next Steps
+                </h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                            <h6 class="fw-bold text-primary"><i class="fas fa-chart-line me-1"></i> CGPA Target</h6>
+                            <p class="small text-muted mb-0">
+                                {% if stats.student.entered_cgpa and stats.student.entered_cgpa >= 8.5 %}
+                                Excellent standing! Maintain current study habits to secure campus honors and top placement eligibility.
+                                {% elif stats.student.entered_cgpa and stats.student.entered_cgpa >= 7.0 %}
+                                Good progress. Focusing on high-credit subjects will help bridge the {{ stats.gap_from_topper }} gap to the class topper.
+                                {% else %}
+                                Focus on core subjects and schedule regular revision sessions to lift your cumulative CGPA above 7.0.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                            <h6 class="fw-bold text-success"><i class="fas fa-calendar-check me-1"></i> Attendance Strategy</h6>
+                            <p class="small text-muted mb-0">
+                                {% if stats.att_pct >= 85 %}
+                                Outstanding attendance ({{ stats.att_pct }}%). You have zero exam detention risk.
+                                {% elif stats.att_pct >= 75 %}
+                                Safe standing ({{ stats.att_pct }}%), but aim for 85%+ to build a buffer for emergencies.
+                                {% else %}
+                                <strong class="text-danger">Critical:</strong> Your attendance is below the mandatory 75% threshold. Ensure 100% attendance in coming weeks.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                            <h6 class="fw-bold text-warning"><i class="fas fa-trophy me-1"></i> Leaderboard Standing</h6>
+                            <p class="small text-muted mb-0">
+                                Currently ranked <strong>#{{ stats.rank or 'N/A' }}</strong> out of {{ stats.total_ranked }} students. Visit the <a href="{{ url_for('auth.rankings') }}">Rankings Leaderboard</a> to view class toppers.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Students - EduMetrics Admin{% endblock %}
+
+{% block content %}
+<div class="animate-fadeInUp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-0" style="color:#1e1b4b;">
+                <i class="fas fa-user-graduate me-2 text-primary"></i>All Students
+            </h4>
+            <p class="text-muted small mb-0">{{ students|length }} student(s) registered</p>
+        </div>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary-gradient">
+            <i class="fas fa-user-plus me-2"></i>Add Student
+        </a>
+    </div>
+
+    <div class="table-container animate-scaleIn delay-1">
+        {% if students %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Roll No.</th>
+                        <th>Course</th>
+                        <th>Branch</th>
+                        <th>Dept</th>
+                        <th>Sem</th>
+                        <th>Gender</th>
+                        <th>CGPA</th>
+                        <th>Grad Year</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:30px;height:30px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <span class="text-white fw-bold" style="font-size:0.65rem;">{{ s.full_name[0].upper() if s.full_name else '?' }}</span>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">{{ s.full_name }}</div>
+                                    <div class="text-muted small">{{ s.email or s.mobile_number or '' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><code>{{ s.roll_number }}</code></td>
+                        <td>{{ s.course or '—' }}</td>
+                        <td>{{ s.branch or '—' }}</td>
+                        <td>{{ s.department or '—' }}</td>
+                        <td>{{ s.semester or '—' }}</td>
+                        <td>{{ s.gender or '—' }}</td>
+                        <td>
+                            {% if s.entered_cgpa is not none %}
+                            <span class="badge {% if s.entered_cgpa >= 8 %}bg-success{% elif s.entered_cgpa >= 6 %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                {{ s.entered_cgpa }}
+                            </span>
+                            {% else %}<span class="text-muted">—</span>{% endif %}
+                        </td>
+                        <td>{{ s.graduation_year or '—' }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-1">
+                                <a href="{{ url_for('admin.edit_student', sid=s.id) }}" class="btn btn-sm btn-outline-primary" title="Edit Student">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="post" action="{{ url_for('admin.delete_student', sid=s.id) }}"
+                                      onsubmit="return confirm('Delete student {{ s.full_name }}?')">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete Student">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-5 text-center text-muted">
+            <i class="fas fa-user-slash fa-3x opacity-25 mb-3"></i>
+            <p>No students found. <a href="{{ url_for('auth.register') }}">Register the first student.</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

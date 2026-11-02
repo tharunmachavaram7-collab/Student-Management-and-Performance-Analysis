@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}Attendance - EduMetrics Admin{% endblock %}
+
+{% block content %}
+<div class="animate-fadeInUp">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-0" style="color:#1e1b4b;">
+            <i class="fas fa-calendar-check me-2 text-info"></i>Attendance Management
+        </h4>
+        <p class="text-muted small mb-0">{{ attendance|length }} attendance record(s)</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add Attendance Form -->
+        <div class="col-lg-4">
+            <div class="form-card animate-slideInLeft delay-1">
+                <h6 class="fw-bold mb-3" style="color:#1e1b4b;"><i class="fas fa-plus-circle me-2 text-info"></i>Record Attendance</h6>
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Student *</label>
+                        <select class="form-select" name="student_id" required>
+                            <option value="">-- Select Student --</option>
+                            {% for s in students %}
+                            <option value="{{ s.id }}">{{ s.full_name }} ({{ s.roll_number }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject *</label>
+                        <select class="form-select" name="subject_id" required>
+                            <option value="">-- Select Subject --</option>
+                            {% for subj in subjects %}
+                            <option value="{{ subj.id }}">{{ subj.code }} — {{ subj.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date *</label>
+                        <input type="date" class="form-control" name="date" required
+                               value="{{ now().strftime('%Y-%m-%d') if now else '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status *</label>
+                        <select class="form-select" name="status" required>
+                            <option value="present">Present</option>
+                            <option value="absent">Absent</option>
+                            <option value="late">Late</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary-gradient w-100"
+                            {% if not students or not subjects %}disabled{% endif %}>
+                        <i class="fas fa-check me-2"></i>Record Attendance
+                    </button>
+                    {% if not students or not subjects %}
+                    <div class="form-text text-warning mt-2">⚠ Students and subjects must exist first.</div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Attendance Table -->
+        <div class="col-lg-8">
+            <div class="table-container animate-fadeInUp delay-2">
+                <div class="p-3 border-bottom">
+                    <h6 class="mb-0 fw-bold" style="color:#1e1b4b;"><i class="fas fa-list me-2"></i>Attendance Records</h6>
+                </div>
+                {% if attendance %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in attendance %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ a.student.full_name if a.student else '—' }}</td>
+                                <td>{{ a.subject.name if a.subject else '—' }}</td>
+                                <td>{{ a.date.strftime('%d %b %Y') if a.date else '—' }}</td>
+                                <td>
+                                    <span class="badge {% if a.status == 'present' %}bg-success{% elif a.status == 'absent' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                        {{ a.status|capitalize }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="post" action="{{ url_for('admin.delete_attendance', aid=a.id) }}"
+                                          onsubmit="return confirm('Delete this attendance record?')">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">
+                    <i class="fas fa-calendar fa-3x opacity-25 mb-3"></i>
+                    <p>No attendance records yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

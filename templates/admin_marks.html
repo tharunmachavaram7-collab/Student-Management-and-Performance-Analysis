@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Marks - EduMetrics Admin{% endblock %}
+
+{% block content %}
+<div class="animate-fadeInUp">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-0" style="color:#1e1b4b;">
+            <i class="fas fa-edit me-2 text-primary"></i>Marks Management
+        </h4>
+        <p class="text-muted small mb-0">{{ marks|length }} mark entries recorded</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add Mark Form -->
+        <div class="col-lg-4">
+            <div class="form-card animate-slideInLeft delay-1">
+                <h6 class="fw-bold mb-3" style="color:#1e1b4b;"><i class="fas fa-plus-circle me-2 text-primary"></i>Record Marks</h6>
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Student *</label>
+                        <select class="form-select" name="student_id" required>
+                            <option value="">-- Select Student --</option>
+                            {% for s in students %}
+                            <option value="{{ s.id }}">{{ s.full_name }} ({{ s.roll_number }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject *</label>
+                        <select class="form-select" name="subject_id" required>
+                            <option value="">-- Select Subject --</option>
+                            {% for subj in subjects %}
+                            <option value="{{ subj.id }}">{{ subj.code }} — {{ subj.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Assessment *</label>
+                        <select class="form-select" name="assessment_id" required>
+                            <option value="">-- Select Assessment --</option>
+                            {% for a in assessments %}
+                            <option value="{{ a.id }}">{{ a.name }} ({{ a.assessment_type|capitalize }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Marks Obtained *</label>
+                        <input type="number" class="form-control" name="marks_obtained" required
+                               step="0.5" min="0" placeholder="e.g. 78.5">
+                    </div>
+                    <button type="submit" class="btn btn-primary-gradient w-100"
+                            {% if not students or not subjects or not assessments %}disabled{% endif %}>
+                        <i class="fas fa-save me-2"></i>Record Marks
+                    </button>
+                    {% if not students or not subjects or not assessments %}
+                    <div class="form-text text-warning mt-2">⚠ Students, subjects, and assessments must exist first.</div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Marks Table -->
+        <div class="col-lg-8">
+            <div class="table-container animate-fadeInUp delay-2">
+                <div class="p-3 border-bottom">
+                    <h6 class="mb-0 fw-bold" style="color:#1e1b4b;"><i class="fas fa-list me-2"></i>All Marks</h6>
+                </div>
+                {% if marks %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student</th>
+                                <th>Subject</th>
+                                <th>Assessment</th>
+                                <th>Marks</th>
+                                <th>Max</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in marks %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ m.student.full_name if m.student else '—' }}</td>
+                                <td>{{ m.subject.name if m.subject else '—' }}</td>
+                                <td>{{ m.assessment.name if m.assessment else '—' }}</td>
+                                <td><strong class="text-primary">{{ m.marks_obtained }}</strong></td>
+                                <td class="text-muted">{{ m.assessment.max_marks if m.assessment else '—' }}</td>
+                                <td>
+                                    <form method="post" action="{{ url_for('admin.delete_mark', mid=m.id) }}"
+                                          onsubmit="return confirm('Delete this mark entry?')">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">
+                    <i class="fas fa-edit fa-3x opacity-25 mb-3"></i>
+                    <p>No marks recorded yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

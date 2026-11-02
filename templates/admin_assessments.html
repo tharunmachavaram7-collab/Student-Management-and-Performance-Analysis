@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Assessments - EduMetrics Admin{% endblock %}
+
+{% block content %}
+<div class="animate-fadeInUp">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-0" style="color:#1e1b4b;">
+            <i class="fas fa-clipboard-check me-2 text-warning"></i>Assessments Management
+        </h4>
+        <p class="text-muted small mb-0">{{ assessments|length }} assessment(s) configured</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add Assessment Form -->
+        <div class="col-lg-4">
+            <div class="form-card animate-slideInLeft delay-1">
+                <h6 class="fw-bold mb-3" style="color:#1e1b4b;"><i class="fas fa-plus-circle me-2 text-warning"></i>Add New Assessment</h6>
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Assessment Name *</label>
+                        <input type="text" class="form-control" name="name" required placeholder="e.g. Mid-Term Exam">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type *</label>
+                        <select class="form-select" name="assessment_type" required>
+                            <option value="">-- Select Type --</option>
+                            <option value="midterm">Midterm</option>
+                            <option value="final">Final</option>
+                            <option value="quiz">Quiz</option>
+                            <option value="assignment">Assignment</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Max Marks</label>
+                        <input type="number" class="form-control" name="max_marks" value="100" min="1" step="0.5">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Weightage (%)</label>
+                        <input type="number" class="form-control" name="weightage" value="100" min="1" max="100" step="0.5">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject *</label>
+                        <select class="form-select" name="subject_id" required>
+                            <option value="">-- Select Subject --</option>
+                            {% for subj in subjects %}
+                            <option value="{{ subj.id }}">{{ subj.code }} — {{ subj.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if not subjects %}
+                        <div class="form-text text-warning">⚠ Add subjects first.</div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary-gradient w-100" {% if not subjects %}disabled{% endif %}>
+                        <i class="fas fa-plus me-2"></i>Add Assessment
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Assessments Table -->
+        <div class="col-lg-8">
+            <div class="table-container animate-fadeInUp delay-2">
+                <div class="p-3 border-bottom">
+                    <h6 class="mb-0 fw-bold" style="color:#1e1b4b;"><i class="fas fa-list me-2"></i>All Assessments</h6>
+                </div>
+                {% if assessments %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Subject</th>
+                                <th>Max Marks</th>
+                                <th>Weightage</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in assessments %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><strong>{{ a.name }}</strong></td>
+                                <td>
+                                    <span class="badge
+                                        {% if a.assessment_type == 'final' %}bg-danger
+                                        {% elif a.assessment_type == 'midterm' %}bg-warning text-dark
+                                        {% elif a.assessment_type == 'quiz' %}bg-info text-dark
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ a.assessment_type|capitalize }}
+                                    </span>
+                                </td>
+                                <td>{{ a.subject.name if a.subject else '—' }}</td>
+                                <td>{{ a.max_marks }}</td>
+                                <td>{{ a.weightage }}%</td>
+                                <td>
+                                    <form method="post" action="{{ url_for('admin.delete_assessment', aid=a.id) }}"
+                                          onsubmit="return confirm('Delete {{ a.name }}?')">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">
+                    <i class="fas fa-clipboard fa-3x opacity-25 mb-3"></i>
+                    <p>No assessments yet. Add one using the form.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

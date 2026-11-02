@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - EduMetrics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 35%, #4f46e5 70%, #7c3aed 100%);
+            display: flex; align-items: flex-start; justify-content: center;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .bg-circle {
+            position: fixed; border-radius: 50%; opacity: 0.06;
+            background: #fff; animation: float-circle 7s ease-in-out infinite;
+        }
+        .bg-circle:nth-child(1) { width: 300px; height: 300px; top: -100px; left: -80px; }
+        .bg-circle:nth-child(2) { width: 200px; height: 200px; bottom: 0; right: -60px; animation-delay: 3s; }
+        @keyframes float-circle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-18px); }
+        }
+        .register-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 24px;
+            padding: 2.4rem 2.2rem;
+            width: 100%; max-width: 720px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.28);
+            position: relative; z-index: 10;
+            animation: cardIn 0.7s ease-out;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(35px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .logo {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.2rem;
+        }
+        .logo i { color: #fff; font-size: 1.6rem; }
+        h2 { text-align: center; font-weight: 700; color: #1e1b4b; }
+        .subtitle { text-align: center; color: #6b7280; font-size: 0.88rem; margin-bottom: 1.8rem; }
+
+        .section-label {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: #4f46e5; margin: 1.2rem 0 0.8rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .section-label::after { content: ''; flex: 1; border-top: 2px solid #e5e7eb; }
+
+        .form-label { font-size: 0.8rem; font-weight: 600; color: #374151; }
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb; border-radius: 10px;
+            font-size: 0.88rem; transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+        .btn-register {
+            width: 100%; padding: 0.8rem;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border: none; border-radius: 12px;
+            color: #fff; font-weight: 600; font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px); color: #fff;
+            box-shadow: 0 10px 25px rgba(79,70,229,0.4);
+        }
+        .required-star { color: #ef4444; }
+        .flash-container .alert { border-radius: 10px; border: none; font-size: 0.85rem; }
+        .login-link { text-align: center; margin-top: 1rem; font-size: 0.88rem; color: #6b7280; }
+        .login-link a { color: #4f46e5; font-weight: 600; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+
+    <div class="register-card">
+        <div class="logo"><i class="fas fa-user-plus"></i></div>
+        <h2>Create Account</h2>
+        <p class="subtitle">Join EduMetrics — fill in your details below</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container mb-3">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show py-2 px-3" role="alert">
+                <small><i class="fas fa-exclamation-triangle me-1"></i>{{ message }}</small>
+                <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('auth.register') }}">
+            <!-- Personal Info -->
+            <div class="section-label"><i class="fas fa-user me-1"></i> Personal Information</div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-id-card me-1 text-primary"></i>Full Name <span class="required-star">*</span></label>
+                    <input type="text" class="form-control" name="full_name" required placeholder="e.g. Arjun Sharma">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-hashtag me-1 text-primary"></i>Roll Number <span class="required-star">*</span></label>
+                    <input type="text" class="form-control" name="roll_number" required placeholder="e.g. CSE2024001">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-birthday-cake me-1 text-primary"></i>Age</label>
+                    <input type="number" class="form-control" name="age" min="15" max="40" placeholder="e.g. 20">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-calendar me-1 text-primary"></i>Date of Birth</label>
+                    <input type="date" class="form-control" name="dob">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-venus-mars me-1 text-primary"></i>Gender</label>
+                    <select class="form-select" name="gender">
+                        <option value="">-- Select --</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-phone me-1 text-primary"></i>Mobile Number</label>
+                    <input type="tel" class="form-control" name="mobile_number" placeholder="e.g. 9876543210">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-envelope me-1 text-primary"></i>Email (optional)</label>
+                    <input type="email" class="form-control" name="email" placeholder="e.g. arjun@email.com">
+                </div>
+            </div>
+
+            <!-- Academic Info -->
+            <div class="section-label"><i class="fas fa-book me-1"></i> Academic Information</div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-layer-group me-1 text-success"></i>Class</label>
+                    <input type="text" class="form-control" name="class_name" placeholder="e.g. 3rd Year">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-list-ol me-1 text-success"></i>Semester</label>
+                    <select class="form-select" name="semester">
+                        <option value="">-- Select --</option>
+                        {% for i in range(1, 9) %}
+                        <option value="{{ i }}">Semester {{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-graduation-cap me-1 text-success"></i>Graduation Year</label>
+                    <input type="number" class="form-control" name="graduation_year" min="2020" max="2035" placeholder="e.g. 2026">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-university me-1 text-success"></i>Course</label>
+                    <input type="text" class="form-control" name="course" placeholder="e.g. B.Tech">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-code-branch me-1 text-success"></i>Branch</label>
+                    <input type="text" class="form-control" name="branch" placeholder="e.g. Computer Science">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fas fa-building me-1 text-success"></i>Department</label>
+                    <input type="text" class="form-control" name="department" placeholder="e.g. CSE">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-star me-1 text-warning"></i>CGPA (0–10, optional)</label>
+                    <input type="number" class="form-control" name="entered_cgpa" step="0.01" min="0" max="10" placeholder="e.g. 8.5">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-id-badge me-1 text-success"></i>Student ID (auto-generated if blank)</label>
+                    <input type="text" class="form-control" name="student_id" placeholder="e.g. STU2024001">
+                </div>
+            </div>
+
+            <!-- Security -->
+            <div class="section-label"><i class="fas fa-lock me-1"></i> Security</div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-key me-1 text-danger"></i>Password <span class="required-star">*</span></label>
+                    <input type="password" class="form-control" name="password" required placeholder="Min 6 characters">
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <p class="text-muted small mb-2"><i class="fas fa-info-circle me-1"></i>Your roll number will be your primary login identifier.</p>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-register mt-4">
+                <i class="fas fa-user-plus me-2"></i>Create Account
+            </button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="{{ url_for('auth.login') }}">Sign in here</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

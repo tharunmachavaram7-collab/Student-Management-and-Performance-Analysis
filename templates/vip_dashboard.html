@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}VIP Demo Dashboard - EduMetrics{% endblock %}
+
+{% block content %}
+<div class="animate-fadeInUp">
+    <!-- VIP Banner -->
+    <div class="alert alert-warning border-0 rounded-3 mb-4 d-flex align-items-center gap-3 py-3"
+         style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-left:5px solid #f59e0b !important;border-radius:14px !important;">
+        <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+        <div>
+            <strong>⚠️ VIP Demo Mode — Sample Data Only</strong><br>
+            <small class="text-muted">This dashboard shows <em>demo data only</em>. No real student records are displayed. Register to access real analytics.</small>
+        </div>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-warning btn-sm ms-auto fw-bold">Register Now</a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-4">
+        <h4 class="fw-bold mb-0" style="color:#1e1b4b;">
+            <i class="fas fa-star me-2 text-warning"></i>VIP Demo Dashboard
+            <span class="badge bg-warning text-dark ms-2">DEMO MODE</span>
+        </h4>
+        <p class="text-muted small">Preview of the EduMetrics Analytics Platform</p>
+    </div>
+
+    <!-- Demo Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card animate-fadeInUp delay-1">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box bg-gradient-primary"><i class="fas fa-users"></i></div>
+                    <div>
+                        <div class="stat-value text-primary">247</div>
+                        <div class="stat-label">Demo Students</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card animate-fadeInUp delay-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box bg-gradient-success"><i class="fas fa-star"></i></div>
+                    <div>
+                        <div class="stat-value text-success">8.34</div>
+                        <div class="stat-label">Avg CGPA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card animate-fadeInUp delay-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box bg-gradient-warning"><i class="fas fa-calendar-check"></i></div>
+                    <div>
+                        <div class="stat-value text-warning">86.3%</div>
+                        <div class="stat-label">Avg Attendance</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card animate-fadeInUp delay-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box bg-gradient-accent"><i class="fas fa-book"></i></div>
+                    <div>
+                        <div class="stat-value text-info">12</div>
+                        <div class="stat-label">Demo Subjects</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Top Students -->
+        <div class="col-lg-6">
+            <div class="table-container animate-scaleIn delay-2">
+                <div class="p-3 border-bottom">
+                    <h6 class="mb-0 fw-bold" style="color:#1e1b4b;">
+                        <i class="fas fa-trophy me-2 text-warning"></i>Top Demo Students
+                    </h6>
+                </div>
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Dept</th>
+                            <th>CGPA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in demo_students %}
+                        <tr>
+                            <td>
+                                {% if s.rank == 1 %}🥇
+                                {% elif s.rank == 2 %}🥈
+                                {% elif s.rank == 3 %}🥉
+                                {% else %}<span class="badge bg-light text-dark">{{ s.rank }}</span>{% endif %}
+                            </td>
+                            <td>{{ s.name }}</td>
+                            <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ s.dept }}</span></td>
+                            <td><strong class="text-success">{{ s.cgpa }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Subject Overview -->
+        <div class="col-lg-6">
+            <div class="stat-card animate-fadeInUp delay-3">
+                <h6 class="fw-bold mb-3" style="color:#1e1b4b;">
+                    <i class="fas fa-chart-bar me-2 text-primary"></i>Demo Subject Performance
+                </h6>
+                {% for subj in demo_subjects %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-semibold">{{ subj.name }}</span>
+                        <span class="text-muted">Avg: {{ subj.avg }}/100 &bull; Att: {{ subj.attendance }}%</span>
+                    </div>
+                    <div class="progress mb-1" style="height:7px;border-radius:99px;">
+                        <div class="progress-bar bg-gradient-primary"
+                             style="width:{{ subj.avg }}%;border-radius:99px;"></div>
+                    </div>
+                    <div class="progress" style="height:5px;border-radius:99px;">
+                        <div class="progress-bar bg-success"
+                             style="width:{{ subj.attendance }}%;border-radius:99px;"></div>
+                    </div>
+                    <div class="small text-muted mt-1">
+                        <span style="display:inline-block;width:10px;height:10px;background:#4f46e5;border-radius:2px;"></span> Marks &nbsp;
+                        <span style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:2px;"></span> Attendance
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-5">
+        <div class="stat-card d-inline-block" style="max-width:500px;">
+            <i class="fas fa-rocket fa-2x text-primary mb-3"></i>
+            <h5 class="fw-bold">Ready to use the real system?</h5>
+            <p class="text-muted small">Register your account to access personalized dashboards, rankings, and analytics.</p>
+            <div class="d-flex gap-2 justify-content-center">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary-gradient">
+                    <i class="fas fa-user-plus me-2"></i>Register Now
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

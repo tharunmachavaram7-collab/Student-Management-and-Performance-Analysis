@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Subjects - EduMetrics Admin{% endblock %}
+
+{% block content %}
+<div class="animate-fadeInUp">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-0" style="color:#1e1b4b;">
+            <i class="fas fa-book me-2 text-success"></i>Subjects Management
+        </h4>
+        <p class="text-muted small mb-0">{{ subjects|length }} subject(s) configured</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add Subject Form -->
+        <div class="col-lg-4">
+            <div class="form-card animate-slideInLeft delay-1">
+                <h6 class="fw-bold mb-3" style="color:#1e1b4b;"><i class="fas fa-plus-circle me-2 text-success"></i>Add New Subject</h6>
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Subject Code *</label>
+                        <input type="text" class="form-control" name="code" required placeholder="e.g. CS301">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject Name *</label>
+                        <input type="text" class="form-control" name="name" required placeholder="e.g. Data Structures">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Credits</label>
+                        <input type="number" class="form-control" name="credits" value="3" min="1" max="6">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" name="department" placeholder="e.g. CSE">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Semester</label>
+                        <select class="form-select" name="semester">
+                            <option value="">-- Select --</option>
+                            {% for i in range(1, 9) %}
+                            <option value="{{ i }}">Semester {{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary-gradient w-100">
+                        <i class="fas fa-plus me-2"></i>Add Subject
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Subjects Table -->
+        <div class="col-lg-8">
+            <div class="table-container animate-fadeInUp delay-2">
+                <div class="p-3 border-bottom">
+                    <h6 class="mb-0 fw-bold" style="color:#1e1b4b;"><i class="fas fa-list me-2"></i>All Subjects</h6>
+                </div>
+                {% if subjects %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Credits</th>
+                                <th>Department</th>
+                                <th>Semester</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in subjects %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><code class="text-primary">{{ s.code }}</code></td>
+                                <td>{{ s.name }}</td>
+                                <td><span class="badge bg-info text-dark">{{ s.credits }}</span></td>
+                                <td>{{ s.department or '—' }}</td>
+                                <td>{{ s.semester or '—' }}</td>
+                                <td>
+                                    <form method="post" action="{{ url_for('admin.delete_subject', sid=s.id) }}"
+                                          onsubmit="return confirm('Delete {{ s.name }}?')">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">
+                    <i class="fas fa-book fa-3x opacity-25 mb-3"></i>
+                    <p>No subjects yet. Add one using the form.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
